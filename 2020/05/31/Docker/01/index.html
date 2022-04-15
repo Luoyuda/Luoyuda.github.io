@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>docker 笔记 | 落雨</title>
+  <meta name="description" content="docker 核心docker 镜像 命令docker images 查看所有本地主机上的镜像     命令选项 意义    -a, –all 列出所有镜像，默认为 true   –disests 列出镜像数字摘要值，默认为true   -f, –filter&#x3D;[] 过滤列出的镜像   –format&#x3D;”TEMPLATE” 控制输出格式   -q, –quiet 仅输出ID信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker 笔记">
+<meta property="og:url" content="https://luoyuda.github.io/2020/05/31/Docker/01/index.html">
+<meta property="og:site_name" content="落雨不落雨">
+<meta property="og:description" content="docker 核心docker 镜像 命令docker images 查看所有本地主机上的镜像     命令选项 意义    -a, –all 列出所有镜像，默认为 true   –disests 列出镜像数字摘要值，默认为true   -f, –filter&#x3D;[] 过滤列出的镜像   –format&#x3D;”TEMPLATE” 控制输出格式   -q, –quiet 仅输出ID信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-31T11:23:00.000Z">
+<meta property="article:modified_time" content="2020-05-31T11:23:00.000Z">
+<meta property="article:author" content="xiayuchen">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://luoyuda.github.io/2020/05/31/Docker/01/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="落雨不落雨" type="application/atom+xml">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 6.1.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luoyuda" target="_blank">
+          <img class="img-circle img-rotate" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">落雨</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shenzhen, China</small>
+        <p class="article-read hidden-xs">
+          <i class="icon icon-eye-fill" aria-hidden="true"></i>
+          <span id="busuanzi_value_site_pv">0</span>
+        </p>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luoyuda" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://juejin.cn/user/2770425032224814" target="_blank" title="Juejin" data-toggle=tooltip data-placement=top><i class="icon icon-juejin"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/qrcode.jpg" width="150" height="150">
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/">工程化</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><span class="category-list-count">47</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">源码阅读</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%83%A8%E7%BD%B2/">部署</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ES6/" rel="tag">ES6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventLoop/" rel="tag">EventLoop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/" rel="tag">HTML5</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">50</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LFU/" rel="tag">LFU</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/" rel="tag">Node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Promise/" rel="tag">Promise</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbol/" rel="tag">Symbol</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vue/" rel="tag">Vue</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Webpack/" rel="tag">Webpack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bind/" rel="tag">bind</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/call-apply/" rel="tag">call &#x2F; apply</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/canvas/" rel="tag">canvas</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/new/" rel="tag">new</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/this/" rel="tag">this</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="tag">二分查找</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="tag">二叉树</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" rel="tag">作用域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE/" rel="tag">作用域链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%A8%E7%AD%89/" rel="tag">全等</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%92%E6%B3%A1/" rel="tag">冒泡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%9B%E9%80%A0%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">创造型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%BC%80%E6%A0%91/" rel="tag">前缀树</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE/" rel="tag">原型链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%BB%E9%87%8D/" rel="tag">去重</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="tag">双向链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A0%86/" rel="tag">堆</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A0%86%E6%8E%92%E5%BA%8F/" rel="tag">堆排序</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%8C%E5%B0%94/" rel="tag">希尔</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/" rel="tag">异步处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BD%92%E5%B9%B6/" rel="tag">归并</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AA%E7%8E%AF%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="tag">循环双向链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8/" rel="tag">循环链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E6%8E%92/" rel="tag">快排</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%87%92%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/" rel="tag">懒加载图片</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">排序算法</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%90%E6%95%88%E5%B7%A5%E5%85%B7/" rel="tag">提效工具</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/" rel="tag">插件开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E5%85%A5/" rel="tag">插入</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" rel="tag">效率工具</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A0%88/" rel="tag">栈</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%85%E6%8B%B7%E8%B4%9D/" rel="tag">浅拷贝</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B7%B1%E6%8B%B7%E8%B4%9D/" rel="tag">深拷贝</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">结构型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%A7%E6%89%BF/" rel="tag">继承</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">行为型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/" rel="tag">计数排序</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%89%E6%8B%A9/" rel="tag">选择</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%8D%E6%9E%84/" rel="tag">重构</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%9F%E5%88%97/" rel="tag">队列</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E9%93%BE%E8%A1%A8/" rel="tag">静态链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%AA%A8%E6%9E%B6%E5%B1%8F/" rel="tag">骨架屏</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Array/" style="font-size: 13px;">Array</a> <a href="/tags/CSS/" style="font-size: 13.29px;">CSS</a> <a href="/tags/ES6/" style="font-size: 13.43px;">ES6</a> <a href="/tags/EventLoop/" style="font-size: 13px;">EventLoop</a> <a href="/tags/HTML5/" style="font-size: 13.14px;">HTML5</a> <a href="/tags/JavaScript/" style="font-size: 14px;">JavaScript</a> <a href="/tags/LFU/" style="font-size: 13px;">LFU</a> <a href="/tags/LRU/" style="font-size: 13px;">LRU</a> <a href="/tags/Map/" style="font-size: 13px;">Map</a> <a href="/tags/Node/" style="font-size: 13px;">Node</a> <a href="/tags/Promise/" style="font-size: 13.29px;">Promise</a> <a href="/tags/React/" style="font-size: 13px;">React</a> <a href="/tags/Set/" style="font-size: 13px;">Set</a> <a href="/tags/Symbol/" style="font-size: 13px;">Symbol</a> <a href="/tags/Vue/" style="font-size: 13.57px;">Vue</a> <a href="/tags/Webpack/" style="font-size: 13.14px;">Webpack</a> <a href="/tags/bind/" style="font-size: 13px;">bind</a> <a href="/tags/call-apply/" style="font-size: 13px;">call / apply</a> <a href="/tags/canvas/" style="font-size: 13.14px;">canvas</a> <a href="/tags/docker/" style="font-size: 13px;">docker</a> <a href="/tags/new/" style="font-size: 13px;">new</a> <a href="/tags/this/" style="font-size: 13px;">this</a> <a href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" style="font-size: 13px;">二分查找</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 13px;">二叉树</a> <a href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" style="font-size: 13px;">作用域</a> <a href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE/" style="font-size: 13px;">作用域链</a> <a href="/tags/%E5%85%A8%E7%AD%89/" style="font-size: 13px;">全等</a> <a href="/tags/%E5%86%92%E6%B3%A1/" style="font-size: 13px;">冒泡</a> <a href="/tags/%E5%88%9B%E9%80%A0%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">创造型设计模式</a> <a href="/tags/%E5%89%8D%E7%BC%80%E6%A0%91/" style="font-size: 13px;">前缀树</a> <a href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE/" style="font-size: 13px;">原型链</a> <a href="/tags/%E5%8E%BB%E9%87%8D/" style="font-size: 13px;">去重</a> <a href="/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">双向链表</a> <a href="/tags/%E5%A0%86/" style="font-size: 13px;">堆</a> <a href="/tags/%E5%A0%86%E6%8E%92%E5%BA%8F/" style="font-size: 13px;">堆排序</a> <a href="/tags/%E5%B8%8C%E5%B0%94/" style="font-size: 13px;">希尔</a> <a href="/tags/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/" style="font-size: 13px;">异步处理</a> <a href="/tags/%E5%BD%92%E5%B9%B6/" style="font-size: 13px;">归并</a> <a href="/tags/%E5%BE%AA%E7%8E%AF%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">循环双向链表</a> <a href="/tags/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">循环链表</a> <a href="/tags/%E5%BF%AB%E6%8E%92/" style="font-size: 13px;">快排</a> <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 13px;">性能优化</a> <a href="/tags/%E6%87%92%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/" style="font-size: 13px;">懒加载图片</a> <a href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" style="font-size: 13px;">执行上下文</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 13.57px;">排序算法</a> <a href="/tags/%E6%8F%90%E6%95%88%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">提效工具</a> <a href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/" style="font-size: 13px;">插件开发</a> <a href="/tags/%E6%8F%92%E5%85%A5/" style="font-size: 13px;">插入</a> <a href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">效率工具</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 13.86px;">数据结构</a> <a href="/tags/%E6%A0%88/" style="font-size: 13px;">栈</a> <a href="/tags/%E6%B5%85%E6%8B%B7%E8%B4%9D/" style="font-size: 13px;">浅拷贝</a> <a href="/tags/%E6%B7%B1%E6%8B%B7%E8%B4%9D/" style="font-size: 13px;">深拷贝</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 13.71px;">算法</a> <a href="/tags/%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">结构型设计模式</a> <a href="/tags/%E7%BB%A7%E6%89%BF/" style="font-size: 13px;">继承</a> <a href="/tags/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">行为型设计模式</a> <a href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/" style="font-size: 13px;">计数排序</a> <a href="/tags/%E9%80%89%E6%8B%A9/" style="font-size: 13px;">选择</a> <a href="/tags/%E9%87%8D%E6%9E%84/" style="font-size: 13.29px;">重构</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">链表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 13.14px;">队列</a> <a href="/tags/%E9%9D%99%E6%80%81%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">静态链表</a> <a href="/tags/%E9%AA%A8%E6%9E%B6%E5%B1%8F/" style="font-size: 13px;">骨架屏</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">24</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/15/data-structures/LFU/" class="title">LFU 缓存算法 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-15T13:23:00.000Z" itemprop="datePublished">2022-04-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/14/data-structures/LRU/" class="title">LRU 缓存算法 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-14T13:23:00.000Z" itemprop="datePublished">2022-04-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/12/JavaScript/lazy/" class="title">开发一个懒加载图片 npm 插件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-12T02:35:00.000Z" itemprop="datePublished">2022-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/11/JavaScript/eventloop/" class="title">EventLoop 到底是个啥（JavaScript）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-11T08:35:00.000Z" itemprop="datePublished">2022-04-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/10/Sort/heap/" class="title">排序算法 - 堆排序 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-10T12:35:00.000Z" itemprop="datePublished">2022-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Docker/01" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker 笔记
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/05/31/Docker/01/" class="article-date">
+	  <time datetime="2020-05-31T11:23:00.000Z" itemprop="datePublished">2020-05-31</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E9%83%A8%E7%BD%B2/">部署</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/docker/" rel="tag">docker</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <!-- <span id="busuanzi_container_page_pv"> -->
+			<span id="busuanzi_value_page_pv">0</span>
+		<!-- </span> -->
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/05/31/Docker/01/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="docker-核心"><a href="#docker-核心" class="headerlink" title="docker 核心"></a>docker 核心</h2><h3 id="docker-镜像-命令"><a href="#docker-镜像-命令" class="headerlink" title="docker 镜像 命令"></a>docker 镜像 命令</h3><h4 id="docker-images"><a href="#docker-images" class="headerlink" title="docker images"></a>docker images</h4><blockquote>
+<p>查看所有本地主机上的镜像</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a, –all</td>
+<td>列出所有镜像，默认为 true</td>
+</tr>
+<tr>
+<td>–disests</td>
+<td>列出镜像数字摘要值，默认为true</td>
+</tr>
+<tr>
+<td>-f, –filter&#x3D;[]</td>
+<td>过滤列出的镜像</td>
+</tr>
+<tr>
+<td>–format&#x3D;”TEMPLATE”</td>
+<td>控制输出格式</td>
+</tr>
+<tr>
+<td>-q, –quiet</td>
+<td>仅输出ID信息</td>
+</tr>
+</tbody></table>
+<h4 id="docker-search"><a href="#docker-search" class="headerlink" title="docker search"></a>docker search</h4><blockquote>
+<p>搜索镜像</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>–filter</td>
+<td>过滤搜索</td>
+</tr>
+</tbody></table>
+<h4 id="docker-pull"><a href="#docker-pull" class="headerlink" title="docker pull"></a>docker pull</h4><blockquote>
+<p>拉取镜像，分层下载，docker pull 镜像名:标签名，不写标签名则拉取最新的版本</p>
+</blockquote>
+<h4 id="docker-rmi"><a href="#docker-rmi" class="headerlink" title="docker rmi"></a>docker rmi</h4><blockquote>
+<p>删除一个或一组镜像，用空格分割</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-f</td>
+<td>强制删除</td>
+</tr>
+</tbody></table>
+<h3 id="docker-容器命令"><a href="#docker-容器命令" class="headerlink" title="docker 容器命令"></a>docker 容器命令</h3><h4 id="docker-run"><a href="#docker-run" class="headerlink" title="docker run"></a>docker run</h4><blockquote>
+<p>启动一个镜像，docker run [可选项] image</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>–name</td>
+<td>容器名字</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>后台方式运行</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>指定容器端口</td>
+</tr>
+<tr>
+<td>-P</td>
+<td>随机指定端口</td>
+</tr>
+<tr>
+<td>-it</td>
+<td>使用交互式运行，进入容器查看内容</td>
+</tr>
+</tbody></table>
+<h4 id="docker-ps"><a href="#docker-ps" class="headerlink" title="docker ps"></a>docker ps</h4><blockquote>
+<p>列出所有在运行的容器</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>列出所有容器</td>
+</tr>
+<tr>
+<td>-q</td>
+<td>仅输出ID信息</td>
+</tr>
+<tr>
+<td>-n&#x3D;?</td>
+<td>最近创建的容器</td>
+</tr>
+</tbody></table>
+<h4 id="docker-rm"><a href="#docker-rm" class="headerlink" title="docker rm"></a>docker rm</h4><blockquote>
+<p>删除一个或一组容器，用空格分割</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令选项</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-f</td>
+<td>强制删除</td>
+</tr>
+</tbody></table>
+<h4 id="docker-start"><a href="#docker-start" class="headerlink" title="docker start"></a>docker start</h4><blockquote>
+<p>启动容器</p>
+</blockquote>
+<h4 id="docker-restart"><a href="#docker-restart" class="headerlink" title="docker restart"></a>docker restart</h4><blockquote>
+<p>重启容器</p>
+</blockquote>
+<h4 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop"></a>docker stop</h4><blockquote>
+<p>停止容器</p>
+</blockquote>
+<h4 id="docker-kill"><a href="#docker-kill" class="headerlink" title="docker kill"></a>docker kill</h4><blockquote>
+<p>强制杀死容器</p>
+</blockquote>
+<h3 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h3><h4 id="docker-logs"><a href="#docker-logs" class="headerlink" title="docker logs"></a>docker logs</h4><blockquote>
+<p>查看某个容器的日志</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs -tf --<span class="built_in">tail</span> 10 container</span><br></pre></td></tr></table></figure>
+
+<h4 id="docker-top"><a href="#docker-top" class="headerlink" title="docker top"></a>docker top</h4><blockquote>
+<p>查看容器内进程信息</p>
+</blockquote>
+<h4 id="docker-inspect"><a href="#docker-inspect" class="headerlink" title="docker inspect"></a>docker inspect</h4><blockquote>
+<p>查看容器信息</p>
+</blockquote>
+<h4 id="docker-exec"><a href="#docker-exec" class="headerlink" title="docker exec"></a>docker exec</h4><blockquote>
+<p>进入当前容器，开启一个新的终端，可以在里面操作</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it container /bin/bash</span><br></pre></td></tr></table></figure>
+
+<h4 id="docker-attach"><a href="#docker-attach" class="headerlink" title="docker attach"></a>docker attach</h4><blockquote>
+<p>进去容器正在执行的代码</p>
+</blockquote>
+<h4 id="docker-cp"><a href="#docker-cp" class="headerlink" title="docker cp"></a>docker cp</h4><blockquote>
+<p>从容器中复制文件</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">cp</span> container:init.sh . </span><br></pre></td></tr></table></figure>
+
+<h4 id="docker-commit"><a href="#docker-commit" class="headerlink" title="docker commit"></a>docker commit</h4><blockquote>
+<p>提交镜像</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit -m=<span class="string">&quot;描述&quot;</span> -a=<span class="string">&quot;作者&quot;</span> container image:tag</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker-小案例"><a href="#docker-小案例" class="headerlink" title="docker 小案例"></a>docker 小案例</h3><h4 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 下载镜像</span></span><br><span class="line">docker pull nginx</span><br><span class="line"><span class="comment"># 2. 运行镜像生成容器</span></span><br><span class="line">docker run -d --name xhl_nginx -p 3030:80 nginx</span><br><span class="line"><span class="comment"># 3. 测试是否正常运行</span></span><br><span class="line">curl localhost:3030</span><br></pre></td></tr></table></figure>
+
+<h4 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 下载镜像</span></span><br><span class="line">docker pull tomcat</span><br><span class="line"><span class="comment"># 2. 运行镜像生成容器</span></span><br><span class="line">docker run -d -p 3355:8080 --name xhl_tomcat tomcat</span><br><span class="line"><span class="comment"># 3. 复制文件夹目录到目标文件夹</span></span><br><span class="line"><span class="built_in">cp</span> -r /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器数据卷"><a href="#容器数据卷" class="headerlink" title="容器数据卷"></a>容器数据卷</h3><p>容器之间可以共享数据</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -v 主机目录:容器目录</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 下载镜像</span></span><br><span class="line">docker pull mysql</span><br><span class="line"><span class="comment"># 2. 运行</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h3><blockquote>
+<p>Dockerfile 就是用来构建 docker 镜像的构建文件</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -f 文件路径 -t image .</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>每个保留关键字都必须大写</li>
+<li>执行从上到下顺序执行</li>
+<li>#表示注释</li>
+<li>每一个指令都会创建一个镜像层</li>
+</ol>
+<h4 id="Dockerfile-指令"><a href="#Dockerfile-指令" class="headerlink" title="Dockerfile 指令"></a>Dockerfile 指令</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM                <span class="comment"># 基础镜像，一切从这里开始构建</span></span><br><span class="line">MAINTAINER          <span class="comment"># 镜像维护者， 姓名+邮箱</span></span><br><span class="line">RUN                 <span class="comment"># 运行命令</span></span><br><span class="line">ADD                 <span class="comment"># 添加内容</span></span><br><span class="line">WORKDIR             <span class="comment"># 设置工作目录</span></span><br><span class="line">VOLUME              <span class="comment"># 挂载目录</span></span><br><span class="line">EXPOSE              <span class="comment"># 保留端口配置</span></span><br><span class="line">CMD                 <span class="comment"># 指定这个容器启动时候运行的命令，只有最后一个会生效，可以被替代</span></span><br><span class="line">ENTRYPOINT          <span class="comment"># 指定这个容器启动时候运行的命令，可以追加命令</span></span><br><span class="line">ONBUILD             <span class="comment"># 当构建一个被继承当时候会运行，触发指令</span></span><br><span class="line">COPY                <span class="comment"># 复制文件到镜像中</span></span><br><span class="line">ENV                 <span class="comment"># 设置环境变量</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="构建centos"><a href="#构建centos" class="headerlink" title="构建centos"></a>构建centos</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基础映像</span></span><br><span class="line">FROM centos</span><br><span class="line"><span class="comment"># 维护者</span></span><br><span class="line">MAINTAINER xhl&lt;562958029@qq.com&gt;</span><br><span class="line"><span class="comment"># 环境变量</span></span><br><span class="line">ENV MYPATH /usr/local</span><br><span class="line"><span class="comment"># 设置工作目录</span></span><br><span class="line">WORKDIR <span class="variable">$MYPATH</span></span><br><span class="line"><span class="comment"># 安装 vim net-tools</span></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"><span class="comment"># 暴露端口</span></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD <span class="built_in">echo</span> <span class="variable">$MYPATH</span></span><br><span class="line">CMD <span class="built_in">echo</span> <span class="string">&quot;--end--&quot;</span></span><br><span class="line">CMD /bin/bash</span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-ENTRYPOINT"><a href="#CMD-ENTRYPOINT" class="headerlink" title="CMD ENTRYPOINT"></a>CMD ENTRYPOINT</h4><p>ENTRYPOINT 追加命令直接拼接到参数后面</p>
+<p>CMD 需要完整命令去替换</p>
+<h4 id="tomcat-实战"><a href="#tomcat-实战" class="headerlink" title="tomcat 实战"></a>tomcat 实战</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">tomcat-demo 目录结构</span><br><span class="line">.</span><br><span class="line">├── Dockerfile</span><br><span class="line">├── apache-tomcat-9.0.35.tar.gz</span><br><span class="line">├── html</span><br><span class="line">│   ├── WEB-INF</span><br><span class="line">│   │   └── web.xml</span><br><span class="line">│   ├── a.jsp</span><br><span class="line">│   └── index.html</span><br><span class="line">├── jdk-8u11-linux-x64.tar.gz</span><br><span class="line">├── logs</span><br><span class="line">│   └──</span><br><span class="line">└── readme.txt</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dockerfile</span></span><br><span class="line"><span class="comment"># 基本镜像</span></span><br><span class="line">FROM centos</span><br><span class="line"><span class="comment"># 基本信息</span></span><br><span class="line">MAINTAINER xhl&lt;562958029@qq.com&gt;</span><br><span class="line"><span class="comment"># 复制文件</span></span><br><span class="line">COPY readme.txt /usr/local/readme.txt</span><br><span class="line"><span class="comment"># 添加 jdk apache-tomcat 到 /usr/local 并解压</span></span><br><span class="line">ADD jdk-8u11-linux-x64.tar.gz /usr/local/</span><br><span class="line">ADD apache-tomcat-9.0.35.tar.gz /usr/local/</span><br><span class="line"><span class="comment"># 安装 vim</span></span><br><span class="line">RUN yum -y install vim</span><br><span class="line"><span class="comment"># 设置环境变量 工作目录</span></span><br><span class="line">ENV MYPATH /usr/local/</span><br><span class="line">WORKDIR <span class="variable">$MYPATH</span></span><br><span class="line"><span class="comment"># 设置环境变量 </span></span><br><span class="line">ENV JAVA_HOME /usr/local/jdk1.8.0_11</span><br><span class="line">ENV CLASSPATH JAVA_HOME/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br><span class="line">ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.35</span><br><span class="line">ENV CATALINA_BASH /usr/local/apache-tomcat-9.0.35</span><br><span class="line">ENV PATH <span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$CATALINA_HOME</span>/lib:<span class="variable">$CATALINA_HOME</span>/bin</span><br><span class="line"><span class="comment"># 暴露接口</span></span><br><span class="line">EXPOSE 8080</span><br><span class="line"><span class="comment"># 启动 tomcat</span></span><br><span class="line">CMD /usr/local/apache-tomcat-9.0.35/bin/startup.sh &amp;&amp; <span class="built_in">tail</span> -F /usr/local/apache-tomcat-9.0.35/bin/logs/catalina.out</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建镜像</span></span><br><span class="line">docker build -t my_tomcat .</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行镜像</span></span><br><span class="line">docker run -d -p 8090:8080 --name xhl_tomcat -v /Users/chenxiayu/docker-demo/tomcat-demo/html:/usr/local/apache-tomcat-9.0.35/webapps/html -v /Users/chenxiayu/docker-demo/tomcat-demo/logs/:/usr/local/apache-tomcat-9.0.35/logs my_tomcat</span><br><span class="line"></span><br><span class="line"><span class="comment"># 请求localhost:8090</span></span><br><span class="line">curl localhost:8090</span><br><span class="line"></span><br><span class="line"><span class="comment"># tag 打上标签</span></span><br><span class="line">docker tag 392978c9c6de xiayu5/my_tomcat:1.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># push 推送到 dockerHub</span></span><br><span class="line">docker push xiayu5/my_tomcat:1.0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="docker-网络"><a href="#docker-网络" class="headerlink" title="docker 网络"></a>docker 网络</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看内部网络地址</span></span><br><span class="line">ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    <span class="built_in">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: tunl0@NONE: &lt;NOARP&gt; mtu 1480 qdisc noop state DOWN group default qlen 1000</span><br><span class="line">    <span class="built_in">link</span>/ipip 0.0.0.0 brd 0.0.0.0</span><br><span class="line">3: ip6tnl0@NONE: &lt;NOARP&gt; mtu 1452 qdisc noop state DOWN group default qlen 1000</span><br><span class="line">    <span class="built_in">link</span>/tunnel6 :: brd ::</span><br><span class="line">78: eth0@if79: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default </span><br><span class="line">    <span class="built_in">link</span>/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">    inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>每启动一个docker容器，docker就会给容器分配一个ip。容器间可以互相ping通</p>
+<h4 id="–link"><a href="#–link" class="headerlink" title="–link"></a>–link</h4><p>连接容器，只能 A 连 B，A 能 ping 通 A，B ping 不通 A</p>
+<h4 id="网络模式"><a href="#网络模式" class="headerlink" title="网络模式"></a>网络模式</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">bridge:         桥接模式 (默认)</span><br><span class="line">none:           不配置网络</span><br><span class="line">host:           和宿主机共享网络</span><br><span class="line">container:      容器网络互通</span><br><span class="line"></span><br><span class="line">docker run -d -p -name c1 --net=bridge centos</span><br><span class="line"></span><br><span class="line">docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 mynet</span><br><span class="line">--driver        模式</span><br><span class="line">--subnet        子网地址</span><br><span class="line">--gateway       网关</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不使用 --link 也能 ping 通</span></span><br><span class="line">docker run -it -d --name c1 --net mynet centos</span><br><span class="line">docker run -it -d --name c2 --net mynet centos</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it c1 ping c2</span><br><span class="line">PING c2 (192.168.0.3) 56(84) bytes of data.</span><br><span class="line">64 bytes from c2.mynet (192.168.0.3): icmp_seq=1 ttl=64 time=0.126 ms</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it c2 ping c1</span><br><span class="line">PING c1 (192.168.0.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from c1.mynet (192.168.0.2): icmp_seq=1 ttl=64 time=0.987 ms</span><br><span class="line"></span><br><span class="line"><span class="comment"># docker network connect [OPTIONS] NETWORK CONTAINER</span></span><br><span class="line"><span class="comment"># 容器连通到网络</span></span><br><span class="line">docker network connect mynet cpn1</span><br><span class="line"><span class="comment"># 将cpn1加入到 mynet Containers 中</span></span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it c2 ping cpn1</span><br><span class="line">PING cpn1 (192.168.0.4) 56(84) bytes of data.</span><br><span class="line">64 bytes from cpn1.mynet (192.168.0.4): icmp_seq=1 ttl=64 time=0.263 ms</span><br><span class="line">64 bytes from cpn1.mynet (192.168.0.4): icmp_seq=2 ttl=64 time=0.103 ms</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it c1 ping cpn1</span><br><span class="line">PING cpn1 (192.168.0.4) 56(84) bytes of data.</span><br><span class="line">64 bytes from cpn1.mynet (192.168.0.4): icmp_seq=1 ttl=64 time=0.444 ms</span><br><span class="line">64 bytes from cpn1.mynet (192.168.0.4): icmp_seq=2 ttl=64 time=0.076 ms</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="redis-集群"><a href="#redis-集群" class="headerlink" title="redis 集群"></a>redis 集群</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># init.sh</span></span><br><span class="line">docker network create --driver bridge --subnet 192.169.0.0/16 redis </span><br><span class="line">sudo <span class="built_in">mkdir</span> -p /Users/chenxiayu/docker-demo/redis-group-demo/redis</span><br><span class="line">sudo <span class="built_in">chmod</span> -R 777 /Users/chenxiayu/docker-demo/redis-group-demo/redis/</span><br><span class="line"><span class="keyword">for</span> port <span class="keyword">in</span> $(<span class="built_in">seq</span> 1 6);</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$port</span>&quot;</span></span><br><span class="line">sudo <span class="built_in">mkdir</span> -p /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/data</span><br><span class="line">sudo <span class="built_in">mkdir</span> -p /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/conf</span><br><span class="line">sudo <span class="built_in">chmod</span> -R 777 /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/</span><br><span class="line">sudo <span class="built_in">chmod</span> -R 777 /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/data/</span><br><span class="line">sudo <span class="built_in">chmod</span> -R 777 /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/conf/</span><br><span class="line">sudo <span class="built_in">touch</span> /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/conf/redis.conf</span><br><span class="line">sudo <span class="built_in">chmod</span> -R 777 /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/conf/redis.conf</span><br><span class="line">sudo <span class="built_in">cat</span> &lt;&lt;<span class="string">EOF &gt; /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-$&#123;port&#125;/conf/redis.conf</span></span><br><span class="line"><span class="string">port 6379</span></span><br><span class="line"><span class="string">bind 0.0.0.0</span></span><br><span class="line"><span class="string">cluster-enabled yes</span></span><br><span class="line"><span class="string">cluster-config-file nodes.conf</span></span><br><span class="line"><span class="string">cluster-node-timeout 5000</span></span><br><span class="line"><span class="string">cluster-announce-ip 192.169.0.1$&#123;port&#125;</span></span><br><span class="line"><span class="string">cluster-announce-port 6379</span></span><br><span class="line"><span class="string">cluster-announce-bus-port 16379</span></span><br><span class="line"><span class="string">appendonly yes</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line">sudo docker run -p 637<span class="variable">$&#123;port&#125;</span>:6379 -p 1367<span class="variable">$&#123;port&#125;</span>:16379 --name redis-<span class="variable">$&#123;port&#125;</span> \</span><br><span class="line">-v /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/data:/data \</span><br><span class="line">-v /Users/chenxiayu/docker-demo/redis-group-demo/redis/node-<span class="variable">$&#123;port&#125;</span>/conf/redis.conf:/etc/redis/redis.conf \</span><br><span class="line">-d --net redis --ip 192.169.0.1<span class="variable">$&#123;port&#125;</span> redis redis-server /etc/redis/redis.conf</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入容器</span></span><br><span class="line">docker <span class="built_in">exec</span> -it redis-1 sh</span><br><span class="line"><span class="comment"># 创建集群</span></span><br><span class="line">redis-cli --cluster create 192.169.0.11:6379 192.169.0.12:6379 192.169.0.13:6379 192.169.0.14:6379 192.169.0.15:6379 192.169.0.16:6379 --cluster-replicas 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进入集群 查看集群分布</span></span><br><span class="line">redis-cli -c</span><br><span class="line">192.169.0.14:6379&gt; cluster nodes</span><br><span class="line">0b340a93041448fd37a52fb808a9690c56aab02b 192.169.0.13:6379@16379 slave 8d6026446c28203ae8708edeec3bfa68d8606ca2 0 1590910699057 7 connected</span><br><span class="line">30d17be07b086c65eb45efd449ca6e65949efd2d 192.169.0.16:6379@16379 slave 81f593301f71dec7f89d5e41a3f5facbfa4136bc 0 1590910698545 6 connected</span><br><span class="line">8d6026446c28203ae8708edeec3bfa68d8606ca2 192.169.0.14:6379@16379 myself,master - 0 1590910699000 7 connected 10923-16383</span><br><span class="line">81f593301f71dec7f89d5e41a3f5facbfa4136bc 192.169.0.12:6379@16379 master - 0 1590910700088 2 connected 5461-10922</span><br><span class="line">acac3d931539ff56cc584b000f1edab51ec47021 192.169.0.15:6379@16379 slave e22c1502d5d6446e4ea126987bba9b3e40a84168 0 1590910699000 5 connected</span><br><span class="line">e22c1502d5d6446e4ea126987bba9b3e40a84168 192.169.0.11:6379@16379 master - 0 1590910699000 1 connected 0-5460</span><br><span class="line"></span><br><span class="line"><span class="comment"># 随便设置一个值</span></span><br><span class="line">192.169.0.14:6379&gt; <span class="built_in">set</span> b 321</span><br><span class="line">-&gt; Redirected to slot [3300] located at 192.169.0.11:6379</span><br><span class="line">OK</span><br><span class="line">192.169.0.14:6379&gt; get b</span><br><span class="line">-&gt; Redirected to slot [3300] located at 192.169.0.11:6379</span><br><span class="line"><span class="string">&quot;321&quot;</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://luoyuda.github.io/2020/05/31/Docker/01/" title="docker 笔记" target="_blank" rel="external">https://luoyuda.github.io/2020/05/31/Docker/01/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luoyuda" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luoyuda" target="_blank"><span class="text-dark">落雨</span><small class="ml-1x">Web Developer</small></a></h3>
+        <div>保持耐心</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/06/13/Node/01/" title="oss 上传辅助工具"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/04/16/CSS/01/" title="CSS布局"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luoyuda" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://juejin.cn/user/2770425032224814" target="_blank" title="Juejin" data-toggle=tooltip data-placement=top><i class="icon icon-juejin"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby" style="visibility: hidden">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+<!-- click-love -->
+<script>!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);</script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: 'a110094fa1fea74d3767',
+    clientSecret: 'f4a53670bb57c6077341683fa235998410759467',
+    repo: 'Luoyuda.github.io',
+    owner: 'Luoyuda',
+    admin: ['Luoyuda'],
+    id: md5(location.pathname),
+    distractionFreeMode: true,
+    language: 'zh-CN',
+    enableHotKey: 'true'
+  })
+  gitalk.render('comments')
+  </script>
+      
+
+
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"hOffset":20,"vOffset":-20,"position":"right","width":150,"height":350},"mobile":{"show":false,"scale":0.2},"react":{"opacityDefault":0.5,"opacityOnHover":0.2},"log":false});</script><script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 3,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>

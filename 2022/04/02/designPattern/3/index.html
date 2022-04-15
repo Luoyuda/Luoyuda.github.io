@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>设计模式 - 笔记 - 行为型设计模式 （JavaScript实现） | 落雨</title>
+  <meta name="description" content="行为型设计模式关注于模块间的沟通 模板方法模式父类定义一组操作算法骨架，而将实现步骤延迟到子类中，使得子类可以不改变父类的算法结构的同时可重新定义算法中某些实现步骤  优点 它封装了不变部分，扩展可变部分。它把认为是不变部分的算法封装到父类中实现，而把可变部分算法由子类继承实现，便于子类继续扩展 它在父类中提取了公共的部分代码，便于代码复用 部分方法是由子类实现的，因此子类可以通过扩展方式增加相应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式 - 笔记 - 行为型设计模式 （JavaScript实现）">
+<meta property="og:url" content="https://luoyuda.github.io/2022/04/02/designPattern/3/index.html">
+<meta property="og:site_name" content="落雨不落雨">
+<meta property="og:description" content="行为型设计模式关注于模块间的沟通 模板方法模式父类定义一组操作算法骨架，而将实现步骤延迟到子类中，使得子类可以不改变父类的算法结构的同时可重新定义算法中某些实现步骤  优点 它封装了不变部分，扩展可变部分。它把认为是不变部分的算法封装到父类中实现，而把可变部分算法由子类继承实现，便于子类继续扩展 它在父类中提取了公共的部分代码，便于代码复用 部分方法是由子类实现的，因此子类可以通过扩展方式增加相应">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93b8cb04d9164f3ba23bb8ddccb8d8bc~tplv-k3u1fbpfcp-watermark.image">
+<meta property="article:published_time" content="2022-04-02T05:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-15T06:06:33.728Z">
+<meta property="article:author" content="xiayuchen">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="行为型设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93b8cb04d9164f3ba23bb8ddccb8d8bc~tplv-k3u1fbpfcp-watermark.image">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://luoyuda.github.io/2022/04/02/designPattern/3/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="落雨不落雨" type="application/atom+xml">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 6.1.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luoyuda" target="_blank">
+          <img class="img-circle img-rotate" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">落雨</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shenzhen, China</small>
+        <p class="article-read hidden-xs">
+          <i class="icon icon-eye-fill" aria-hidden="true"></i>
+          <span id="busuanzi_value_site_pv">0</span>
+        </p>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luoyuda" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://juejin.cn/user/2770425032224814" target="_blank" title="Juejin" data-toggle=tooltip data-placement=top><i class="icon icon-juejin"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/qrcode.jpg" width="150" height="150">
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/">工程化</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><span class="category-list-count">47</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">源码阅读</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%83%A8%E7%BD%B2/">部署</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Array/" rel="tag">Array</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ES6/" rel="tag">ES6</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/EventLoop/" rel="tag">EventLoop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML5/" rel="tag">HTML5</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">50</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LFU/" rel="tag">LFU</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LRU/" rel="tag">LRU</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Map/" rel="tag">Map</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/" rel="tag">Node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Promise/" rel="tag">Promise</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Set/" rel="tag">Set</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbol/" rel="tag">Symbol</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vue/" rel="tag">Vue</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Webpack/" rel="tag">Webpack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bind/" rel="tag">bind</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/call-apply/" rel="tag">call &#x2F; apply</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/canvas/" rel="tag">canvas</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/new/" rel="tag">new</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/this/" rel="tag">this</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="tag">二分查找</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="tag">二叉树</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" rel="tag">作用域</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE/" rel="tag">作用域链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%A8%E7%AD%89/" rel="tag">全等</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%92%E6%B3%A1/" rel="tag">冒泡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%9B%E9%80%A0%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">创造型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%BC%80%E6%A0%91/" rel="tag">前缀树</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE/" rel="tag">原型链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%BB%E9%87%8D/" rel="tag">去重</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="tag">双向链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A0%86/" rel="tag">堆</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A0%86%E6%8E%92%E5%BA%8F/" rel="tag">堆排序</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%8C%E5%B0%94/" rel="tag">希尔</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/" rel="tag">异步处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BD%92%E5%B9%B6/" rel="tag">归并</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AA%E7%8E%AF%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" rel="tag">循环双向链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8/" rel="tag">循环链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E6%8E%92/" rel="tag">快排</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%87%92%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/" rel="tag">懒加载图片</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="tag">执行上下文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">排序算法</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%90%E6%95%88%E5%B7%A5%E5%85%B7/" rel="tag">提效工具</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/" rel="tag">插件开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E5%85%A5/" rel="tag">插入</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" rel="tag">效率工具</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A0%88/" rel="tag">栈</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%85%E6%8B%B7%E8%B4%9D/" rel="tag">浅拷贝</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B7%B1%E6%8B%B7%E8%B4%9D/" rel="tag">深拷贝</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">结构型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BB%A7%E6%89%BF/" rel="tag">继承</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">行为型设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/" rel="tag">计数排序</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%89%E6%8B%A9/" rel="tag">选择</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%8D%E6%9E%84/" rel="tag">重构</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%9F%E5%88%97/" rel="tag">队列</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%99%E6%80%81%E9%93%BE%E8%A1%A8/" rel="tag">静态链表</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%AA%A8%E6%9E%B6%E5%B1%8F/" rel="tag">骨架屏</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Array/" style="font-size: 13px;">Array</a> <a href="/tags/CSS/" style="font-size: 13.29px;">CSS</a> <a href="/tags/ES6/" style="font-size: 13.43px;">ES6</a> <a href="/tags/EventLoop/" style="font-size: 13px;">EventLoop</a> <a href="/tags/HTML5/" style="font-size: 13.14px;">HTML5</a> <a href="/tags/JavaScript/" style="font-size: 14px;">JavaScript</a> <a href="/tags/LFU/" style="font-size: 13px;">LFU</a> <a href="/tags/LRU/" style="font-size: 13px;">LRU</a> <a href="/tags/Map/" style="font-size: 13px;">Map</a> <a href="/tags/Node/" style="font-size: 13px;">Node</a> <a href="/tags/Promise/" style="font-size: 13.29px;">Promise</a> <a href="/tags/React/" style="font-size: 13px;">React</a> <a href="/tags/Set/" style="font-size: 13px;">Set</a> <a href="/tags/Symbol/" style="font-size: 13px;">Symbol</a> <a href="/tags/Vue/" style="font-size: 13.57px;">Vue</a> <a href="/tags/Webpack/" style="font-size: 13.14px;">Webpack</a> <a href="/tags/bind/" style="font-size: 13px;">bind</a> <a href="/tags/call-apply/" style="font-size: 13px;">call / apply</a> <a href="/tags/canvas/" style="font-size: 13.14px;">canvas</a> <a href="/tags/docker/" style="font-size: 13px;">docker</a> <a href="/tags/new/" style="font-size: 13px;">new</a> <a href="/tags/this/" style="font-size: 13px;">this</a> <a href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" style="font-size: 13px;">二分查找</a> <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" style="font-size: 13px;">二叉树</a> <a href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" style="font-size: 13px;">作用域</a> <a href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE/" style="font-size: 13px;">作用域链</a> <a href="/tags/%E5%85%A8%E7%AD%89/" style="font-size: 13px;">全等</a> <a href="/tags/%E5%86%92%E6%B3%A1/" style="font-size: 13px;">冒泡</a> <a href="/tags/%E5%88%9B%E9%80%A0%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">创造型设计模式</a> <a href="/tags/%E5%89%8D%E7%BC%80%E6%A0%91/" style="font-size: 13px;">前缀树</a> <a href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE/" style="font-size: 13px;">原型链</a> <a href="/tags/%E5%8E%BB%E9%87%8D/" style="font-size: 13px;">去重</a> <a href="/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">双向链表</a> <a href="/tags/%E5%A0%86/" style="font-size: 13px;">堆</a> <a href="/tags/%E5%A0%86%E6%8E%92%E5%BA%8F/" style="font-size: 13px;">堆排序</a> <a href="/tags/%E5%B8%8C%E5%B0%94/" style="font-size: 13px;">希尔</a> <a href="/tags/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/" style="font-size: 13px;">异步处理</a> <a href="/tags/%E5%BD%92%E5%B9%B6/" style="font-size: 13px;">归并</a> <a href="/tags/%E5%BE%AA%E7%8E%AF%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">循环双向链表</a> <a href="/tags/%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">循环链表</a> <a href="/tags/%E5%BF%AB%E6%8E%92/" style="font-size: 13px;">快排</a> <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 13px;">性能优化</a> <a href="/tags/%E6%87%92%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/" style="font-size: 13px;">懒加载图片</a> <a href="/tags/%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87/" style="font-size: 13px;">执行上下文</a> <a href="/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 13.57px;">排序算法</a> <a href="/tags/%E6%8F%90%E6%95%88%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">提效工具</a> <a href="/tags/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/" style="font-size: 13px;">插件开发</a> <a href="/tags/%E6%8F%92%E5%85%A5/" style="font-size: 13px;">插入</a> <a href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">效率工具</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 13.86px;">数据结构</a> <a href="/tags/%E6%A0%88/" style="font-size: 13px;">栈</a> <a href="/tags/%E6%B5%85%E6%8B%B7%E8%B4%9D/" style="font-size: 13px;">浅拷贝</a> <a href="/tags/%E6%B7%B1%E6%8B%B7%E8%B4%9D/" style="font-size: 13px;">深拷贝</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 13.71px;">算法</a> <a href="/tags/%E7%BB%93%E6%9E%84%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">结构型设计模式</a> <a href="/tags/%E7%BB%A7%E6%89%BF/" style="font-size: 13px;">继承</a> <a href="/tags/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">行为型设计模式</a> <a href="/tags/%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F/" style="font-size: 13px;">计数排序</a> <a href="/tags/%E9%80%89%E6%8B%A9/" style="font-size: 13px;">选择</a> <a href="/tags/%E9%87%8D%E6%9E%84/" style="font-size: 13.29px;">重构</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">链表</a> <a href="/tags/%E9%98%9F%E5%88%97/" style="font-size: 13.14px;">队列</a> <a href="/tags/%E9%9D%99%E6%80%81%E9%93%BE%E8%A1%A8/" style="font-size: 13px;">静态链表</a> <a href="/tags/%E9%AA%A8%E6%9E%B6%E5%B1%8F/" style="font-size: 13px;">骨架屏</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">24</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/15/data-structures/LFU/" class="title">LFU 缓存算法 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-15T13:23:00.000Z" itemprop="datePublished">2022-04-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/14/data-structures/LRU/" class="title">LRU 缓存算法 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-14T13:23:00.000Z" itemprop="datePublished">2022-04-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/12/JavaScript/lazy/" class="title">开发一个懒加载图片 npm 插件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-12T02:35:00.000Z" itemprop="datePublished">2022-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/11/JavaScript/eventloop/" class="title">EventLoop 到底是个啥（JavaScript）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-11T08:35:00.000Z" itemprop="datePublished">2022-04-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/04/10/Sort/heap/" class="title">排序算法 - 堆排序 （JavaScript实现）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-04-10T12:35:00.000Z" itemprop="datePublished">2022-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-designPattern/3" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      设计模式 - 笔记 - 行为型设计模式 （JavaScript实现）
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2022/04/02/designPattern/3/" class="article-date">
+	  <time datetime="2022-04-02T05:00:00.000Z" itemprop="datePublished">2022-04-02</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/JavaScript/" rel="tag">JavaScript</a>, <a class="article-tag-link-link" href="/tags/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">行为型设计模式</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <!-- <span id="busuanzi_container_page_pv"> -->
+			<span id="busuanzi_value_page_pv">0</span>
+		<!-- </span> -->
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/04/02/designPattern/3/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 4.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 16(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="行为型设计模式"><a href="#行为型设计模式" class="headerlink" title="行为型设计模式"></a>行为型设计模式</h1><p>关注于模块间的沟通</p>
+<h2 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h2><p>父类定义一组操作算法骨架，而将实现步骤延迟到子类中，使得子类可以不改变父类的算法结构的同时可重新定义算法中某些实现步骤</p>
+<ul>
+<li>优点<ul>
+<li>它封装了不变部分，扩展可变部分。它把认为是不变部分的算法封装到父类中实现，而把可变部分算法由子类继承实现，便于子类继续扩展</li>
+<li>它在父类中提取了公共的部分代码，便于代码复用</li>
+<li>部分方法是由子类实现的，因此子类可以通过扩展方式增加相应的功能，符合开闭原则</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>对每个不同的实现都需要定义一个子类，这会导致类的个数增加，系统更加庞大，设计也更加抽象，间接地增加了系统实现的复杂度</li>
+<li>父类中的抽象方法由子类实现，子类执行的结果会影响父类的结果，这导致一种反向的控制结构，它提高了代码阅读的难度</li>
+<li>由于继承关系自身的缺点，如果父类添加新的抽象方法，则所有子类都要改一遍</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">TemplateCar</span> = <span class="keyword">function</span>(<span class="params">data = &#123;&#125;</span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">type</span> = data.<span class="property">type</span> || <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">wheelCount</span> = data.<span class="property">wheelCount</span> || <span class="number">2</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">mirrorCount</span> = data.<span class="property">mirrorCount</span> || <span class="number">2</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">color</span> = data.<span class="property">color</span> || <span class="string">&#x27;白色&#x27;</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">beforeRun</span> = data.<span class="property">beforeRun</span> || <span class="variable language_">this</span>.<span class="property">beforeRun</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">afterRun</span> = data.<span class="property">afterRun</span> || <span class="variable language_">this</span>.<span class="property">afterRun</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">makeWheel</span> = <span class="keyword">function</span>(<span class="params">count</span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`正在做出<span class="subst">$&#123;count&#125;</span>个轮子`</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">makeMirror</span> = <span class="keyword">function</span>(<span class="params">count</span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`正在做出<span class="subst">$&#123;count&#125;</span>个后视镜`</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">makeCarBody</span> = <span class="keyword">function</span>(<span class="params">color</span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`正在做出<span class="subst">$&#123;color&#125;</span>车身`</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">beforeRun</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`逮虾户，油门启动`</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">afterRun</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`逮虾户，猛踩刹车`</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">run</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">beforeRun</span>()</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`我一路向北，离开有你的地方`</span>)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">afterRun</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">TemplateCar</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">init</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeWheel</span>(<span class="variable language_">this</span>.<span class="property">wheelCount</span>)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeMirror</span>(<span class="variable language_">this</span>.<span class="property">mirrorCount</span>)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeCarBody</span>(<span class="variable language_">this</span>.<span class="property">color</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Motorcycle</span> = <span class="keyword">function</span>(<span class="params">data = &#123;&#125;</span>)&#123;</span><br><span class="line">  data.<span class="property">type</span> = <span class="string">&#x27;motorcycle&#x27;</span></span><br><span class="line">  <span class="title class_">TemplateCar</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>, data)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">init</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Motorcycle</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">TemplateCar</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Car</span> = <span class="keyword">function</span>(<span class="params">data = &#123;&#125;</span>)&#123;</span><br><span class="line">  data.<span class="property">type</span> = <span class="string">&#x27;car&#x27;</span></span><br><span class="line">  data.<span class="property">mirrorCount</span> = <span class="number">2</span></span><br><span class="line">  data.<span class="property">wheelCount</span> = <span class="number">4</span></span><br><span class="line">  <span class="title class_">TemplateCar</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>, data)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">init</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Car</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">TemplateCar</span>()</span><br><span class="line"><span class="title class_">Car</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">init</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeWheel</span>(<span class="variable language_">this</span>.<span class="property">wheelCount</span>)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeMirror</span>(<span class="variable language_">this</span>.<span class="property">mirrorCount</span>)</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">makeCarBody</span>(<span class="variable language_">this</span>.<span class="property">color</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`小汽车组装完毕`</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ToyotaCar</span> = <span class="keyword">function</span>(<span class="params">data=&#123;&#125;</span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">logo</span> = <span class="string">&#x27;Toyota&#x27;</span></span><br><span class="line">  <span class="title class_">Car</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>, data)</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">ToyotaCar</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Car</span>()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><p>将定义的一组算法封装起来，使其相互之间可以替换，封装的算法具有一定的独立性，不会随着客户端变化而变化</p>
+<ul>
+<li>优点<ul>
+<li>多重条件语句不易维护，而使用策略模式可以避免使用多重条件语句</li>
+<li>提供了一系列的可供重用的算法族，恰当使用继承可以把算法族的公共代码转移到父类里面，从而避免重复的代码</li>
+<li>提供相同行为的不同实现，客户可以根据不同时间或空间要求选择不同的</li>
+<li>提供了对开闭原则的完美支持，可以在不修改原代码的情况下，灵活增加新算法</li>
+<li>把算法的使用放到环境类中，而算法的实现移到具体策略类中，实现了二者的分离</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>必须理解所有策略算法的区别，以便适时选择恰当的算法</li>
+<li>造成很多的策略类，增加维护难度</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Strategy</span> = (<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">const</span> _strategy = &#123;</span><br><span class="line">    <span class="title function_">a</span>(<span class="params">arg</span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`a -&gt; <span class="subst">$&#123;arg&#125;</span>`</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">check</span>(<span class="params">type, ...args</span>)&#123;</span><br><span class="line">      <span class="keyword">if</span>(!_strategy[type]) <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">      <span class="keyword">return</span> _strategy[type](...args)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">add</span>(<span class="params">type, fn</span>)&#123;</span><br><span class="line">      _strategy[type] = fn</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="职责链模式"><a href="#职责链模式" class="headerlink" title="职责链模式"></a>职责链模式</h2><p>解决请求点发送者与请求点接受者的耦合，通过链上多个对象分解请求流程，实现请求在多个对象中传递，直到最后一个对象完成处理的请求</p>
+<ul>
+<li>优点<ul>
+<li>降低了对象之间的耦合度</li>
+<li>增强了系统的可扩展性。可以根据需要增加新的请求处理类，满足开闭原则</li>
+<li>增强了给对象指派职责的灵活性</li>
+<li>简化了对象之间的连接</li>
+<li>只需要处理自己该处理的工作，不该处理的传递给下一个对象完成，明确各类的责任范围，符合类的单一职责原则</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>不能保证每个请求一定被处理</li>
+<li>请求的处理可能涉及多个处理对象，系统性能将受影响</li>
+<li>可能会造成循环调用</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Chain</span> = <span class="keyword">function</span>(<span class="params">fn</span>)&#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">fn</span> = fn</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">successor</span> = <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Chain</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">setNextSuccessor</span> = <span class="keyword">function</span>(<span class="params">successor</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">successor</span> = successor</span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Chain</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">passRequest</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">let</span> ret = <span class="variable language_">this</span>.<span class="property">fn</span>.<span class="title function_">apply</span>(<span class="variable language_">this</span>, <span class="variable language_">arguments</span>)</span><br><span class="line">  <span class="keyword">if</span>(ret !== <span class="string">&#x27;successor&#x27;</span>) <span class="keyword">return</span> ret</span><br><span class="line">  <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">successor</span> &amp;&amp; <span class="variable language_">this</span>.<span class="property">successor</span>.<span class="property">passRequest</span>.<span class="title function_">apply</span>(<span class="variable language_">this</span>.<span class="property">successor</span>, <span class="variable language_">arguments</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p>将请求与实现解耦并封装成独立对象，从而使得不同的请求对客户端实现参数化</p>
+<ul>
+<li>优点<ul>
+<li>通过引入中间件（抽象接口）降低系统的耦合度</li>
+<li>扩展性良好，增加或删除命令非常方便。采用命令模式增加与删除命令不会影响其他类，且满足“开闭原则”</li>
+<li>与组合模式结合实现宏命令</li>
+<li>与备忘录模式结合，实现命令的撤销与恢复</li>
+<li>与装饰器模式结合，增加额外功能</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>可能产生大量具体的命令类。因为每一个具体操作都需要设计一个具体命令类，这会增加系统的复杂性</li>
+<li>抽象必然会额外增加类的数量，增加理解成本</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Command</span> = (<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">const</span> _command = &#123;</span><br><span class="line">    <span class="title function_">a</span>(<span class="params">arg</span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`a -&gt; <span class="subst">$&#123;arg&#125;</span>`</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">b</span>(<span class="params">arg</span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`b -&gt; <span class="subst">$&#123;arg&#125;</span>`</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">c</span>(<span class="params">arg</span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`c -&gt; <span class="subst">$&#123;arg&#125;</span>`</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">execute</span>(<span class="params">commands</span>)&#123;</span><br><span class="line">      <span class="keyword">if</span>(!commands || !commands.<span class="property">length</span>) <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">      commands.<span class="title function_">forEach</span>(<span class="function">(<span class="params">&#123; command=<span class="string">&#x27;&#x27;</span>, params &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(!_command[command]) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">typeof</span> params === <span class="string">&#x27;string&#x27;</span>)&#123;</span><br><span class="line">          params = [params]</span><br><span class="line">        &#125;</span><br><span class="line">        _command[command].<span class="title function_">apply</span>(<span class="variable language_">this</span>, params)</span><br><span class="line">      &#125;)</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="访问者模式"><a href="#访问者模式" class="headerlink" title="访问者模式"></a>访问者模式</h2><p>针对对象结构中的元素，定义在不改变该对象的前提下访问结构中元素的新方法</p>
+<ul>
+<li>优点<ul>
+<li>扩展性好。能够在不修改对象结构中的元素的情况下，为对象结构中的元素添加新的功能</li>
+<li>复用性好。可以通过访问者来定义整个对象结构通用的功能，从而提高系统的复用程度</li>
+<li>灵活性好。访问者模式将数据结构与作用于结构上的操作解耦，使得操作集合可相对自由地演化而不影响系统的数据结构</li>
+<li>符合单一职责原则。访问者模式把相关的行为封装在一起，构成一个访问者，使每一个访问者的功能都比较单一</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>增加新的元素类很困难。在访问者模式中，每增加一个新的元素类，都要在每一个具体访问者类中增加相应的具体操作，这违背了“开闭原则”</li>
+<li>破坏封装。访问者模式中具体元素对访问者公布细节，这破坏了对象的封装性</li>
+<li>违反了依赖倒置原则。访问者模式依赖了具体类，而没有依赖抽象类</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">ArrayVisitor</span> = (<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">splice</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="keyword">var</span> args = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">splice</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>, <span class="number">1</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">splice</span>.<span class="title function_">apply</span>(<span class="variable language_">arguments</span>[<span class="number">0</span>], args)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="中介者模式"><a href="#中介者模式" class="headerlink" title="中介者模式"></a>中介者模式</h2><p>通过中介者对象封装一系列对象之间的交互，使对象之间不再互相引用，降低他们之间的耦合</p>
+<ul>
+<li>优点<ul>
+<li>类之间各司其职，符合迪米特法则</li>
+<li>降低了对象之间的耦合性，使得对象易于独立地被复用</li>
+<li>将对象间的一对多关联转变为一对一的关联，提高系统的灵活性，使得系统易于维护和扩展</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>中介者模式将原本多个对象直接的相互依赖变成了中介者和多个同事类的依赖。当同事类越多时，中介者就会越臃肿，变得复杂且难以维护</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Mediator</span> = (<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> _msg = &#123;&#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">register</span>(<span class="params">type, action</span>)&#123;</span><br><span class="line">      <span class="keyword">if</span>(_msg[type])&#123;</span><br><span class="line">        _msg[type].<span class="title function_">push</span>(action)</span><br><span class="line">      &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        _msg[type] = [action]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">send</span>(<span class="params">type</span>)&#123;</span><br><span class="line">      <span class="keyword">if</span>(_msg[type])&#123;</span><br><span class="line">        _msg[type].<span class="title function_">forEach</span>(<span class="function"><span class="params">fn</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="title function_">fn</span>()</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="备忘录模式"><a href="#备忘录模式" class="headerlink" title="备忘录模式"></a>备忘录模式</h2><p>在不破坏对象封装性的前提下，在对象之外捕获并保存该对象内部的状态以便日后对象使用或者对象恢复到以前的某个状态</p>
+<ul>
+<li>优点<ul>
+<li>提供了一种可以恢复状态的机制。当用户需要时能够比较方便地将数据恢复到某个历史的状态</li>
+<li>实现了内部状态的封装。除了创建它的发起人之外，其他对象都不能够访问这些状态信息</li>
+<li>简化了发起人类。不需要管理和保存其内部状态的各个备份，所有状态信息都保存在备忘录中，并由管理者进行管理，这符合单一职责原则</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>资源消耗大。如果要保存的内部状态信息过多或者特别频繁，将会占用比较大的内存资源</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Data</span> = (<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> _cache = &#123;&#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">getData</span>(<span class="params">type, callback=()=&gt;&#123;&#125;</span>)&#123;</span><br><span class="line">      <span class="keyword">if</span>(_cache[type]) <span class="keyword">return</span> <span class="title function_">callback</span>(_cache[type])</span><br><span class="line">      <span class="keyword">const</span> timer = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> data = <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="number">10</span></span><br><span class="line">        _cache[type] = data</span><br><span class="line">        <span class="title function_">callback</span>(data)</span><br><span class="line">      &#125;, <span class="number">1000</span> * <span class="title class_">Math</span>.<span class="title function_">random</span>())</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><p>在不暴露对象内部结构的情况下，可以顺序访问聚合对象内部的元素</p>
+<ul>
+<li>优点<ul>
+<li>访问一个聚合对象的内容而无须暴露它的内部表示</li>
+<li>遍历任务交由迭代器完成，这简化了聚合类</li>
+<li>它支持以不同方式遍历一个聚合，甚至可以自定义迭代器的子类以支持新的遍历</li>
+<li>增加新的聚合类和迭代器类都很方便，无须修改原有代码</li>
+<li>封装性良好，为遍历不同的聚合结构提供一个统一的接口</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>增加了类的个数，这在一定程度上增加了系统的复杂性</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_forOf</span>(<span class="params">obj, cb</span>)&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="keyword">typeof</span> obj[<span class="title class_">Symbol</span>.<span class="property">iterator</span>] !== <span class="string">&#x27;function&#x27;</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;Symbol.iterator is not a function&#x27;</span>)</span><br><span class="line">  <span class="keyword">if</span>(<span class="keyword">typeof</span> cb !== <span class="string">&#x27;function&#x27;</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;cb is not a function&#x27;</span>)</span><br><span class="line">  <span class="keyword">var</span> iteratee = obj[<span class="title class_">Symbol</span>.<span class="property">iterator</span>]()</span><br><span class="line">  <span class="keyword">var</span> res</span><br><span class="line">  <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    res = iteratee.<span class="title function_">next</span>()</span><br><span class="line">    <span class="keyword">if</span>(res.<span class="property">done</span>) <span class="keyword">break</span></span><br><span class="line">    <span class="title function_">cb</span>(res.<span class="property">value</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_createIterator</span>(<span class="params">list, iterator</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> next = <span class="number">0</span></span><br><span class="line">  <span class="keyword">var</span> obj = &#123;</span><br><span class="line">    <span class="attr">next</span>: <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="keyword">return</span> next &lt; list.<span class="property">length</span> ? &#123; <span class="attr">done</span>: <span class="literal">false</span>, <span class="attr">value</span>: <span class="title function_">iterator</span>(list[next++]) &#125; : &#123; <span class="attr">done</span>: <span class="literal">true</span>, <span class="attr">value</span>: <span class="literal">undefined</span> &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">  obj[<span class="title class_">Symbol</span>.<span class="property">iterator</span>] = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> obj</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="解释器模式"><a href="#解释器模式" class="headerlink" title="解释器模式"></a>解释器模式</h2><p>通过一定的文法对应定义一个解释器，通过解释器解释语言的意思</p>
+<ul>
+<li>优点<ul>
+<li>扩展性好。由于在解释器模式中使用类来表示语言的文法规则，因此可以通过继承等机制来改变或扩展文法</li>
+<li>容易实现。在语法树中的每个表达式节点类都是相似的，所以实现其文法较为容易</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>执行效率较低。解释器模式中通常使用大量的循环和递归调用，当要解释的句子较复杂时，其运行速度很慢，且代码的调试过程也比较麻烦</li>
+<li>会引起类膨胀。解释器模式中的每条规则至少需要定义一个类，当包含的文法规则很多时，类的个数将急剧增加，导致系统难以管理与维护</li>
+<li>可应用的场景比较少。在软件开发中，需要定义语言文法的应用实例非常少，所以这种模式很少被使用到</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Play</span> = (<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> _str = &#123;</span><br><span class="line">    <span class="string">&#x27;up&#x27;</span>: <span class="string">&#x27;向上&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;down&#x27;</span>: <span class="string">&#x27;向下&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;left&#x27;</span>: <span class="string">&#x27;向左&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;right&#x27;</span>: <span class="string">&#x27;向右&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;move&#x27;</span>: <span class="string">&#x27;移动&#x27;</span>, </span><br><span class="line">    <span class="string">&#x27;jump&#x27;</span>: <span class="string">&#x27;跳&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="title function_">exec</span>(<span class="params">strings</span>)&#123;</span><br><span class="line">      strings = strings.<span class="title function_">split</span>(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">      <span class="keyword">if</span>(!strings || !strings.<span class="property">length</span>) <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">      <span class="keyword">let</span> text = <span class="string">&#x27;&#x27;</span></span><br><span class="line">      strings.<span class="title function_">forEach</span>(<span class="function"><span class="params">str</span> =&gt;</span> &#123;</span><br><span class="line">        text += _str[str] || str</span><br><span class="line">      &#125;)</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(text)</span><br><span class="line">      <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<h2 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h2><p>根据不同的状态做出不同的行为，状态驱动行为，行为决定状态</p>
+<ul>
+<li>优点<ul>
+<li>结构清晰，状态模式将与特定状态相关的行为局部化到一个状态中，并且将不同状态的行为分割开来，满足“单一职责原则”</li>
+<li>将状态转换显示化，减少对象间的相互依赖。将不同的状态引入独立的对象中会使得状态转换变得更加明确，且减少对象间的相互依赖</li>
+<li>状态类职责明确，有利于程序的扩展。通过定义新的子类很容易地增加新的状态和转换</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>使用必然会增加系统的类与对象的个数</li>
+<li>结构与实现都较为复杂，如果使用不当会导致程序结构和代码的混乱</li>
+<li>对开闭原则的支持不太好，对于可以切换状态的状态模式，增加新的状态类需要修改那些负责状态转换的源码，否则无法切换到新增状态，而且修改某个状态类的行为也需要修改对应类的源码</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Light</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">state</span> = <span class="string">&#x27;off&#x27;</span> <span class="comment">// 电灯初始状态 off</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">button</span> = <span class="literal">null</span> <span class="comment">// 电灯开关按钮</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Light</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">init</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> button = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;button&#x27;</span>),self = <span class="variable language_">this</span>;</span><br><span class="line">  button.<span class="property">innerHTML</span> = <span class="string">&#x27;开关&#x27;</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">button</span> = <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(button);</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">button</span>.<span class="property">onclick</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    self.<span class="title function_">buttonWasPressed</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="title class_">Light</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">buttonWasPressed</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">state</span> === <span class="string">&#x27;off&#x27;</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;开灯&#x27;</span>);</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">state</span> = <span class="string">&#x27;on&#x27;</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">state</span> === <span class="string">&#x27;on&#x27;</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;关灯&#x27;</span>);</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">state</span> = <span class="string">&#x27;off&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> light = <span class="keyword">new</span> <span class="title class_">Light</span>();</span><br><span class="line">light.<span class="title function_">init</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，依赖于它的对象都得到通知并被自动更新，在观察者模式中有两个主要角色：Subject（主题）和 Observer（观察者）</p>
+<ul>
+<li>优点<ul>
+<li>降低了目标与观察者之间的耦合关系，两者之间是抽象耦合关系。符合依赖倒置原则</li>
+<li>目标与观察者之间建立了一套触发机制</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>目标与观察者之间的依赖关系并没有完全解除，而且有可能出现循环引用</li>
+<li>当观察者对象很多时，通知的发布会花费很多时间，影响程序的效率</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Observer</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">name</span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">name</span> = name</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">notify</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`<span class="subst">$&#123;<span class="variable language_">this</span>.name&#125;</span> has been notified`</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subject</span> &#123;</span><br><span class="line">  observers = []</span><br><span class="line">  <span class="title function_">addObserver</span>(<span class="params">observer</span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(observer.<span class="property">name</span>, <span class="string">&#x27;is push&#x27;</span>)</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">observers</span>.<span class="title function_">push</span>(observer)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">deleteObserver</span>(<span class="params">observer</span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;remove observer: &#x27;</span>, observer.<span class="property">name</span>)</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">observers</span> = <span class="variable language_">this</span>.<span class="property">observers</span>.<span class="title function_">filter</span>(<span class="function"><span class="params">o</span> =&gt;</span> o !== observer)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">notifyObservers</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;notify&#x27;</span>)</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">observers</span>.<span class="title function_">forEach</span>(<span class="function"><span class="params">o</span> =&gt;</span> o.<span class="title function_">notify</span>())</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="发布订阅模式"><a href="#发布订阅模式" class="headerlink" title="发布订阅模式"></a>发布订阅模式</h2><p>发送者（称为发布者）不会将消息直接发送给接收者（称为订阅者）。而是将发布的消息分为不同的类别，然后分别发送给不同的订阅者</p>
+<ul>
+<li>优点<ul>
+<li>对象之间解耦</li>
+<li>异步编程中，可以更松耦合的代码编写</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>创建订阅者本身要消耗一定的时间和内存</li>
+<li>虽然可以弱化对象之间的联系，多个发布者和订阅者嵌套一起的时候，程序难以跟踪维护</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Event</span>&#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">cache</span> = &#123;&#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">on</span>(<span class="params">type, event</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable language_">this</span>.<span class="property">cache</span>[type]) <span class="variable language_">this</span>.<span class="property">cache</span>[type] = []</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable language_">this</span>.<span class="property">cache</span>[type].<span class="title function_">indexOf</span>(event) == -<span class="number">1</span>)&#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">cache</span>[type].<span class="title function_">push</span>(event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">off</span>(<span class="params">type, event</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable language_">this</span>.<span class="property">cache</span>[type]) <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">cache</span>[type] = <span class="variable language_">this</span>.<span class="property">cache</span>[type].<span class="title function_">filter</span>(<span class="function"><span class="params">e</span> =&gt;</span> e !== event)</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">once</span>(<span class="params">type, event</span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> _event = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      event.<span class="title function_">apply</span>(<span class="variable language_">this</span>, <span class="variable language_">arguments</span>)</span><br><span class="line">      <span class="variable language_">this</span>.<span class="title function_">off</span>(type, _event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">on</span>(type, _event)</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">emit</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> type = <span class="variable language_">arguments</span>[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">let</span> args = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">slice</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">let</span> list = <span class="variable language_">this</span>.<span class="property">cache</span>[type] || []</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> event <span class="keyword">of</span> list) &#123;</span><br><span class="line">      event.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="与观察者模式的差异"><a href="#与观察者模式的差异" class="headerlink" title="与观察者模式的差异"></a>与观察者模式的差异</h3><ul>
+<li>观察者模式<ul>
+<li>观察者是知道 Subject 的，Subject 一直保持对观察者进行记录</li>
+<li>紧耦合</li>
+<li>大部分情况是同步的</li>
+</ul>
+</li>
+<li>发布订阅<ul>
+<li>发布者和订阅者不知道对方的存在。它们只有通过消息代理进行通信</li>
+<li>松耦合</li>
+<li>大部分情况是异步的</li>
+</ul>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/Luoyuda/js-demo/tree/master/js/designPattern/3">源码地址</a></p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93b8cb04d9164f3ba23bb8ddccb8d8bc~tplv-k3u1fbpfcp-watermark.image" alt="行为型设计模式.png"></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://luoyuda.github.io/2022/04/02/designPattern/3/" title="设计模式 - 笔记 - 行为型设计模式 （JavaScript实现）" target="_blank" rel="external">https://luoyuda.github.io/2022/04/02/designPattern/3/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luoyuda" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luoyuda" target="_blank"><span class="text-dark">落雨</span><small class="ml-1x">Web Developer</small></a></h3>
+        <div>保持耐心</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2022/04/02/designPattern/2/" title="设计模式 - 笔记 - 结构型设计模式 （JavaScript实现）"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2022/04/01/JavaScript/promise-01/" title="Promise 相关方法模拟实现（ES6）"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luoyuda" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://juejin.cn/user/2770425032224814" target="_blank" title="Juejin" data-toggle=tooltip data-placement=top><i class="icon icon-juejin"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby" style="visibility: hidden">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+<!-- click-love -->
+<script>!function(e,t,a){function n(){c(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"),o(),r()}function r(){for(var e=0;e<d.length;e++)d[e].alpha<=0?(t.body.removeChild(d[e].el),d.splice(e,1)):(d[e].y--,d[e].scale+=.004,d[e].alpha-=.013,d[e].el.style.cssText="left:"+d[e].x+"px;top:"+d[e].y+"px;opacity:"+d[e].alpha+";transform:scale("+d[e].scale+","+d[e].scale+") rotate(45deg);background:"+d[e].color+";z-index:99999");requestAnimationFrame(r)}function o(){var t="function"==typeof e.onclick&&e.onclick;e.onclick=function(e){t&&t(),i(e)}}function i(e){var a=t.createElement("div");a.className="heart",d.push({el:a,x:e.clientX-5,y:e.clientY-5,scale:1,alpha:1,color:s()}),t.body.appendChild(a)}function c(e){var a=t.createElement("style");a.type="text/css";try{a.appendChild(t.createTextNode(e))}catch(t){a.styleSheet.cssText=e}t.getElementsByTagName("head")[0].appendChild(a)}function s(){return"rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"}var d=[];e.requestAnimationFrame=function(){return e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.oRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,1e3/60)}}(),n()}(window,document);</script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: 'a110094fa1fea74d3767',
+    clientSecret: 'f4a53670bb57c6077341683fa235998410759467',
+    repo: 'Luoyuda.github.io',
+    owner: 'Luoyuda',
+    admin: ['Luoyuda'],
+    id: md5(location.pathname),
+    distractionFreeMode: true,
+    language: 'zh-CN',
+    enableHotKey: 'true'
+  })
+  gitalk.render('comments')
+  </script>
+      
+
+
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"hOffset":20,"vOffset":-20,"position":"right","width":150,"height":350},"mobile":{"show":false,"scale":0.2},"react":{"opacityDefault":0.5,"opacityOnHover":0.2},"log":false});</script><script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 3,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>
